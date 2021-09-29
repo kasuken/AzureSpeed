@@ -11,8 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.Web.Shared", "Az
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{CA01FA36-7D6F-4613-ABCB-292BCB05A5D4}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\..\..\Users\emanuele.bartolesi\OneDrive - SoftwareONE\Desktop\locations.txt = ..\..\..\..\Users\emanuele.bartolesi\OneDrive - SoftwareONE\Desktop\locations.txt
-		..\..\..\..\Users\emanuele.bartolesi\OneDrive - SoftwareONE\Desktop\storage.txt = ..\..\..\..\Users\emanuele.bartolesi\OneDrive - SoftwareONE\Desktop\storage.txt
+		locations.txt = locations.txt
+		storage.txt = storage.txt
 	EndProjectSection
 EndProject
 Global
