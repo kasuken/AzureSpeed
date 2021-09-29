@@ -41,13 +41,13 @@
                 stopWatch.Start();
                 try
                 {
-                    HttpResponseMessage response = await httpClient.GetAsync(item.Url + "?rnd=" + random);
+                    var response = await httpClient.GetAsync(item.Url + "?rnd=" + random);
                     if (response.IsSuccessStatusCode)
                     {
                         var responseBody = await response.Content.ReadAsStringAsync();
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                 }
                 stopWatch.Stop();
@@ -56,7 +56,7 @@
 
                 StateHasChanged();
 
-                System.Threading.Thread.Sleep(1000);
+                await Task.Delay(500);
             }
 
         } while (true);
