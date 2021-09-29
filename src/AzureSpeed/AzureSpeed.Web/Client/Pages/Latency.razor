@@ -1,16 +1,64 @@
 ﻿@page "/latency"
 
-<h1>Counter</h1>
+<h1>Azure Latency Test</h1>
 
-<p>Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<table class="table">
+    <thead class="thead-dark">
+        <tr>
+            <th></th>
+            <th scope="col">Data Center</th>
+            <th scope="col">Latency</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Endpoints.OrderBy(c => c.Latency).Where(c => c.Latency >0))
+        {
+            <tr>
+                <th scope="row" style="width: 50px"><img src="@item.Icon" height="20" /></th>
+                <td>@item.Location</td>
+                <td>@item.Latency</td>
+            </tr>
+        }
+        </tbody>
+</table>
 
 @code {
-    private int currentCount = 0;
+    private List<AzureSpeed.Web.Shared.StorageEndpoint> Endpoints { get; set; }
 
-    private void IncrementCount()
+    protected async override Task OnInitializedAsync()
     {
-        currentCount++;
+        var provider = new AzureSpeed.Web.Shared.Data.EndpointsProvider();
+        Endpoints = provider.GetStorageEnpoints();
+
+        do
+        {
+            foreach (var item in Endpoints)
+            {
+                var httpClient = new HttpClient();
+                var stopWatch = new System.Diagnostics.Stopwatch();
+                var random = Guid.NewGuid().ToString();
+
+                stopWatch.Start();
+                try
+                {
+                    HttpResponseMessage response = await httpClient.GetAsync(item.Url + "?rnd=" + random);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseBody = await response.Content.ReadAsStringAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                }
+                stopWatch.Stop();
+
+                item.Latency = stopWatch.ElapsedMilliseconds;
+
+                StateHasChanged();
+
+                System.Threading.Thread.Sleep(1000);
+            }
+
+        } while (true);
     }
 }
