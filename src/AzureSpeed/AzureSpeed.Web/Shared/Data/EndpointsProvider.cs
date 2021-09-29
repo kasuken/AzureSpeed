@@ -171,7 +171,7 @@ namespace AzureSpeed.Web.Shared.Data
                 Location = "Germany West Central",
                 Name = "germanywestcentral",
                 Url = "https://azspeedgewestcentral001.blob.core.windows.net/public/speed-test.json",
-                Icon = "https://cdn.staticaly.com/gh/hjnilsson/country-flags/master/svg/fr.svg"
+                Icon = "https://cdn.staticaly.com/gh/hjnilsson/country-flags/master/svg/de.svg"
             });
 
             endpoints.Add(new StorageEndpoint()
