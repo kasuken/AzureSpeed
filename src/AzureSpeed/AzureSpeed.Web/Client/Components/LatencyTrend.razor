@@ -9,6 +9,15 @@
 @using ChartJs.Blazor.Common.Enums
 @using ChartJs.Blazor.Util
 
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.Util
+@using ChartJs.Blazor.Interop
+
 <div class="chart-container">
     <Chart Config="_config"></Chart>
 </div>
@@ -47,7 +56,7 @@
                 Scales = new BarScales
                 {
                     XAxes = new List<CartesianAxis>
-                {
+{
                         new CategoryAxis
                         {
                             GridLines = new GridLines
@@ -57,7 +66,7 @@
                         }
                     },
                     YAxes = new List<CartesianAxis>
-                {
+{
                         new BarLinearCartesianAxis
                         {
                             Ticks = new LinearCartesianTicks
@@ -120,12 +129,12 @@
             .ToList();
 
         // DFK: create a dummy value as 10% of the last known value, to avoid the weird "empty columns" effect
-        var dummyValue = Convert.ToInt32(Math.Round(data.Last() / 0.1d));
+        var dummyValue = Convert.ToInt32(Math.Round(data.Last() * 0.1d));
 
         // prepend dummy values, if needed
         while (data.Count < MaxElements)
         {
-            data.Insert(0,dummyValue);
+            data.Insert(0, dummyValue);
             labels.Insert(0, string.Empty);
         }
 
@@ -138,10 +147,10 @@
             CategoryPercentage = 1
         };
 
-        this._config.Data.Labels.Clear();
-        this._config.Data.Datasets.Clear();
+        _config.Data.Labels.Clear();
+        _config.Data.Datasets.Clear();
 
-        this._config.Data.Labels.AddRange(labels);
-        this._config.Data.Datasets.Add(dataset);
+        _config.Data.Labels.AddRange(labels);
+        _config.Data.Datasets.Add(dataset);
     }
 }
