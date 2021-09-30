@@ -1,0 +1,147 @@
+﻿@using System.Drawing
+
+@using AzureSpeed.Web.Shared
+@using ChartJs.Blazor.BarChart
+@using ChartJs.Blazor.BarChart.Axes
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Util
+
+<div class="chart-container">
+    <Chart Config="_config"></Chart>
+</div>
+
+@code {
+    /// <summary>
+    /// chart configuration
+    /// </summary>
+    private BarConfig _config;
+
+    /// <summary>
+    /// Gets or sets the list of history entries
+    /// </summary>
+    [Parameter]
+    public List<LatencyHistoryEntry> History { get; set; }
+
+    /// <summary>
+    /// Gets or set the maximum number of columns to show
+    /// </summary>
+    [Parameter]
+    public int MaxElements { get; set; }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        _config = new BarConfig
+        {
+            Options = new BarOptions
+            {
+                Animation = new Animation
+                {
+                    Duration = 0,
+                    Easing = Easing.Linear
+                },
+                Responsive = true,
+                Scales = new BarScales
+                {
+                    XAxes = new List<CartesianAxis>
+                {
+                        new CategoryAxis
+                        {
+                            GridLines = new GridLines
+                            {
+                                Display = false
+                            }
+                        }
+                    },
+                    YAxes = new List<CartesianAxis>
+                {
+                        new BarLinearCartesianAxis
+                        {
+                            Ticks = new LinearCartesianTicks
+                            {
+                                BeginAtZero = true
+                            },
+                            ScaleLabel = new ScaleLabel
+                            {
+                                Display = false
+                            },
+                            Display = AxisDisplay.False
+                        }
+                    }
+                },
+                Title = new OptionsTitle
+                {
+                    Display = false
+                },
+                Legend = new Legend
+                {
+                    Display = false
+                }
+            }
+        };
+
+        await base.OnInitializedAsync();
+    }
+
+    /// <inheritdoc />
+    protected override async Task OnParametersSetAsync()
+    {
+        this.InitializeModel();
+
+        await base.OnParametersSetAsync();
+    }
+
+    /// <summary>
+    /// Initialize data for the component
+    /// </summary>
+    private void InitializeModel()
+    {
+        List<int> data = this.History
+            .OrderBy(entry => entry.Timestamp)
+            .Select(entry =>
+            {
+                if (entry.Latency < int.MaxValue)
+                {
+                    return Convert.ToInt32(entry.Latency);
+                }
+
+                return int.MaxValue;
+            })
+            .ToList();
+
+        // DFK: the chart.js component wrapper has some rendering problems if both X and Y axis are hidden,
+        //      and the only workaround I found is to add empty labels in data set
+        List<string> labels = this.History
+            .OrderBy(entry => entry.Timestamp)
+            .Select(entry => string.Empty)
+            .ToList();
+
+        // DFK: create a dummy value as 10% of the last known value, to avoid the weird "empty columns" effect
+        var dummyValue = Convert.ToInt32(Math.Round(data.Last() / 0.1d));
+
+        // prepend dummy values, if needed
+        while (data.Count < MaxElements)
+        {
+            data.Insert(0,dummyValue);
+            labels.Insert(0, string.Empty);
+        }
+
+        IDataset<int> dataset = new BarDataset<int>(data)
+        {
+            BackgroundColor = ColorUtil.FromDrawingColor(Color.FromArgb(128, Color.FromArgb(54, 162, 235))),
+            BorderWidth = 0,
+            BarPercentage = 1,
+            BarThickness = BarThickness.Flex,
+            CategoryPercentage = 1
+        };
+
+        this._config.Data.Labels.Clear();
+        this._config.Data.Datasets.Clear();
+
+        this._config.Data.Labels.AddRange(labels);
+        this._config.Data.Datasets.Add(dataset);
+    }
+}

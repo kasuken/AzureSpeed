@@ -1,4 +1,6 @@
 ﻿@page "/latency"
+@using AzureSpeed.Web.Client.Components
+@using AzureSpeed.Web.Shared
 
 <h1>Azure Latency Test</h1>
 
@@ -8,6 +10,7 @@
             <th></th>
             <th scope="col">Data Center</th>
             <th scope="col">Latency</th>
+            <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
@@ -17,6 +20,9 @@
                 <th scope="row" style="width: 50px"><img src="@item.Icon" height="20" /></th>
                 <td>@item.Location</td>
                 <td>@item.Latency</td>
+                <td>
+                    <LatencyTrend History="@item.History.ToList()" MaxElements="10"></LatencyTrend>
+                </td>
             </tr>
         }
         </tbody>
@@ -24,7 +30,7 @@
 
 @code {
     private List<AzureSpeed.Web.Shared.StorageEndpoint> Endpoints { get; set; }
-
+    
     protected async override Task OnInitializedAsync()
     {
         var provider = new AzureSpeed.Web.Shared.Data.EndpointsProvider();
@@ -53,6 +59,17 @@
                 stopWatch.Stop();
 
                 item.Latency = stopWatch.ElapsedMilliseconds;
+
+                item.History.Enqueue(new LatencyHistoryEntry()
+                {
+                    Timestamp = DateTime.Now,
+                    Latency = item.Latency
+                });
+
+                if (item.History.Count > 10)
+                {
+                    item.History.Dequeue();
+                }
 
                 StateHasChanged();
 
