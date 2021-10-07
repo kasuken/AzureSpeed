@@ -29,7 +29,7 @@ namespace AzureSpeed.Web.Shared.Data
                 Url = "https://azspeedeastus2001.blob.core.windows.net/public/speed-test.json",
                 Icon = "https://cdn.staticaly.com/gh/hjnilsson/country-flags/master/svg/us.svg"
             });
-
+            
             endpoints.Add(new StorageEndpoint()
             {
                 Location = "South Central US",

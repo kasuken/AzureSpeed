@@ -8,6 +8,10 @@ namespace AzureSpeed.Web.Shared
 {
     public class StorageEndpoint
     {
+        public StorageEndpoint()
+        {
+            this.History = new Queue<LatencyHistoryEntry>();
+        }
 
         public string Url { get; set; }
 
@@ -19,5 +23,6 @@ namespace AzureSpeed.Web.Shared
 
         public double Latency { get; set; }
 
+        public Queue<LatencyHistoryEntry> History { get; set; }
     }
 }
